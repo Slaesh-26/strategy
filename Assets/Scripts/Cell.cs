@@ -4,6 +4,7 @@ public class Cell
 {
     public Vector3 WorldPos => worldPos;
     public Vector2Int MapPos => mapPos;
+    public bool IsOccupied => isOccupied;
     
     private Vector2Int mapPos;
     private Vector3 worldPos;

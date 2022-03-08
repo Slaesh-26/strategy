@@ -16,18 +16,27 @@ public class GridObjectPlacer : MonoBehaviour
     {
         Vector2 screenPos = Input.mousePosition;
         Vector3 mousePos = camera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1f));
-        float n = -mousePos.y / (mousePos - camera.transform.position).y;
+        Vector3 mouseRay = mousePos - camera.transform.position;
+        float n = (-mousePos.y + gridMap.Height) / mouseRay.y;
 
-        Vector3 mouseGridPos = mousePos +
-                               n * (mousePos - camera.transform.position);
-        Vector3 objPosition = gridMap.GetSnappedPosition(mouseGridPos);
-        objectToPlace.transform.position = objPosition;
-        Debug.DrawLine(mouseGridPos, mouseGridPos + Vector3.up, Color.red);
-        Debug.Log(mousePos);
+        Vector3 mouseGridPos = mousePos + n * mouseRay;
+        Vector3 objSnappedPosition = gridMap.GetSnappedPosition(mouseGridPos);
+        objectToPlace.transform.position = objSnappedPosition;
 
         if (Input.GetMouseButtonDown(0))
         {
-            Instantiate(objectToPlace, objPosition, Quaternion.identity);
+            gridMap.PlaceGridObject(objSnappedPosition, objectToPlace);
+        }
+
+        if (gridMap.IsCellOccupied(objSnappedPosition))
+        {
+            //Debug.DrawLine(objSnappedPosition, objSnappedPosition + Vector3.up * 6f, Color.red);
+            objectToPlace.SetMarkerNegative();
+        }
+        else
+        {
+            //Debug.DrawLine(objSnappedPosition, objSnappedPosition + Vector3.up * 6f, Color.green);
+            objectToPlace.SetMarkerPositive();
         }
     }
 }
