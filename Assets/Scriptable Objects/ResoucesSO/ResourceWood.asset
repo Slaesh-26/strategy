@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d857cbac75f45d64b94477ae93b28f9c, type: 3}
+  m_Name: ResourceWood
+  m_EditorClassIdentifier: 
+  quantity: 907
+  generation: 1
+  prefabs:
+  - {fileID: 4482695094734302382, guid: 7852b6b67be46f74eb3e0085f2494b42, type: 3}
+  - {fileID: 3474807236995592149, guid: 5383f7a0f7dee7046ac389cce8b055a2, type: 3}
+  - {fileID: 3429505779209959257, guid: ea5390687350efb4dbf9149736850775, type: 3}
+  noiseCoefficient: -0.15
+  noiseClip: 0.46
+  probability: 0.05
