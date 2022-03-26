@@ -1,20 +1,18 @@
 ﻿using System;
 using UnityEngine;
 
-public class GridObject : MonoBehaviour
+public abstract class GridObject : MonoBehaviour
 {
-    [SerializeField] private MeshRenderer meshRenderer;
-    [SerializeField] private Material markerNegative;
-    [SerializeField] private Material markerPositive;
+    protected GameObject model;
 
+    protected void InitVisuals(GameObject modelPrefab)
+    {
+        model = Instantiate(modelPrefab, transform);
+    }
+    
     public void SetPosition(Vector3 pos)
     {
         transform.position = pos;
-    }
-
-    public void SetDefaultVisuals()
-    {
-        meshRenderer.enabled = false;
     }
 
     public void SetParent(Transform t)
@@ -22,7 +20,13 @@ public class GridObject : MonoBehaviour
         transform.SetParent(t);
     }
 
-    public void SetMarkerPositive()
+    /*public void SetDefaultVisuals()
+    {
+        meshRenderer.enabled = false;
+    }*/
+
+
+    /*public void SetMarkerPositive()
     {
         ReplaceAllMaterials(markerPositive);
     }
@@ -35,7 +39,7 @@ public class GridObject : MonoBehaviour
         }
     }
 
-    private void ReplaceAllMaterials(Material mat)
+    protected void ReplaceAllMaterials(Material mat)
     {
         Material[] materials = new Material[meshRenderer.materials.Length];
         
@@ -45,5 +49,5 @@ public class GridObject : MonoBehaviour
         }
 
         meshRenderer.materials = materials;
-    }
+    }*/
 }

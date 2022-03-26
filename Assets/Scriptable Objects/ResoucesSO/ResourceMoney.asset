@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d857cbac75f45d64b94477ae93b28f9c, type: 3}
   m_Name: ResourceMoney
   m_EditorClassIdentifier: 
-  quantity: 500
+  producingMat: {fileID: 2100000, guid: 414ed72aebc69d34b85261ff0b26743c, type: 2}
+  consumingMat: {fileID: 2100000, guid: edb0df3210629064db1ad348f9e7cbc7, type: 2}
+  quantity: 580
   generation: 0
   prefabs: []
   noiseCoefficient: 0.05

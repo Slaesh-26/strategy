@@ -3,8 +3,38 @@
 public class ResourcesGenerator : MonoBehaviour
 {
 	[SerializeField] private ResourceSO[] resources;
+	[SerializeField] private Resource resourcePrefab;
 
-	public GameObject GetResourcePrefab(Vector2Int mapPos, Vector2Int mapSize, out Color color)
+	public Resource CreateResource(Vector2Int mapPos, Vector3 worldPos, Vector2Int mapSize)
+	{
+		foreach (ResourceSO resourceData in resources)
+		{
+			if (resourceData.GenerationType == ResourceSO.Generation.NOISE)
+			{
+				float noise = Mathf.PerlinNoise(mapPos.x * resourceData.NoiseCoefficient,
+				                                mapPos.y * resourceData.NoiseCoefficient);
+				if (noise > resourceData.NoiseClip)
+				{
+					Resource res = InstantiateResource(resourceData, worldPos);
+					return res;
+				}
+			}
+			if (resourceData.GenerationType == ResourceSO.Generation.RANDOM)
+			{
+				bool success = RollTheDice(resourceData.Probability);
+
+				if (success)
+				{
+					Resource res = InstantiateResource(resourceData, worldPos);
+					return res;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public Color GetGizmosColor(Vector2Int mapPos, Vector3 worldPos, Vector2Int mapSize)
 	{
 		foreach (ResourceSO resource in resources)
 		{
@@ -14,22 +44,26 @@ public class ResourcesGenerator : MonoBehaviour
 				                                mapPos.y * resource.NoiseCoefficient);
 				if (noise > resource.NoiseClip)
 				{
-					color = Color.red;
-					return resource.Prefabs[Random.Range(0, resource.Prefabs.Length)];
+					return Color.red;
 				}
 			}
 			if (resource.GenerationType == ResourceSO.Generation.RANDOM)
 			{
 				bool success = RollTheDice(resource.Probability);
-				color = success ? Color.red : Color.black;
-				return success ? resource.Prefabs[0] : null;
+				return success ? Color.red : Color.black;
 			}
 		}
 
-		color = Color.black;
-		return null;
+		return Color.black;
 	}
 
+	private Resource InstantiateResource(ResourceSO resourceData, Vector3 worldPos)
+	{
+		Resource res = Instantiate(resourcePrefab, worldPos, MathUtils.GetRandomFullCircleRotation());
+		res.Init(resourceData);
+		return res;
+	}
+	
 	private bool RollTheDice(float probability)
 	{
 		return Random.Range(0f, 1f) < probability;

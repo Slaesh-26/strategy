@@ -367,6 +367,7 @@ MonoBehaviour:
   resources:
   - {fileID: 11400000, guid: faa3d11ff84058841bc222b7b83a2064, type: 2}
   - {fileID: 11400000, guid: 09f4dfeabca849d4ab5c38f884118982, type: 2}
+  resourcePrefab: {fileID: 7201324145974675483, guid: 1e9e98c1dd4625349bd1d3696649ab9d, type: 3}
 --- !u!1 &547479277
 GameObject:
   m_ObjectHideFlags: 0
@@ -1095,7 +1096,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: de26f681fa8fdf84c9fb143d8322f53e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1657,6 +1658,7 @@ MonoBehaviour:
   buildings:
   - {fileID: 11400000, guid: 2cb63af7f7aeb6040a78725d24c13043, type: 2}
   - {fileID: 11400000, guid: 01071cadf9f6ee14da623364244ca21b, type: 2}
+  buildingPrefab: {fileID: 2959386228630366896, guid: d4af1120c46f6eb4aa525e02dbd16383, type: 3}
   cellStatusMarker: {fileID: 807759590}
 --- !u!1 &2138677391
 GameObject:

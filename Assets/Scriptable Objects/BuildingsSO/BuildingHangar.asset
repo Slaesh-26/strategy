@@ -15,4 +15,12 @@ MonoBehaviour:
   recipe:
   - resourceSO: {fileID: 11400000, guid: faa3d11ff84058841bc222b7b83a2064, type: 2}
     quantity: 1
-  buildingPrefab: {fileID: 4924339672926858416, guid: 08cc9e63e7deb994a82afc4a768160a5, type: 3}
+  modelPrefab: {fileID: 4924339672926858430, guid: 08cc9e63e7deb994a82afc4a768160a5, type: 3}
+  resourcesConsumeDelay: 3
+  resourcesProduceDelay: 5
+  resourcesConsumeQuantity: 1
+  resourcesProduceQuantity: 1
+  resourcesToConsume:
+  - {fileID: 11400000, guid: faa3d11ff84058841bc222b7b83a2064, type: 2}
+  resourcesToProduce:
+  - {fileID: 11400000, guid: 35b965db0e57bdb46a93045c76475f00, type: 2}

@@ -6,11 +6,27 @@ using UnityEngine;
 [CreateAssetMenu]
 public class BuildingSO : ScriptableObject
 {
-    public List<CraftComponent> Recipe => new List<CraftComponent>(recipe);
-    public GridObject Prefab => buildingPrefab;
+    /*public List<CraftComponent> recipe => new List<CraftComponent>(recipe);
+    public GameObject modelPrefab => modelModelPrefab;
     
-    [SerializeField] private List<CraftComponent> recipe;
-    [SerializeField] private GridObject buildingPrefab;
+    public float resourcesConsumeDelay => resourcesConsumeDelay;
+    public float resourcesProduceDelay => resourcesProduceDelay;
+    public int resourcesConsumeQuantity => resourcesConsumeQuantity;
+    public int resourcesProduceQuantity => resourcesProduceQuantity;
+
+    public ResourceSO[] resourcesToConsume => resourcesToConsume;
+    public ResourceSO[] resourcesToProduce => resourcesToProduce;*/
+    
+    public List<CraftComponent> recipe;
+    public GameObject modelPrefab;
+    [Space]
+    public float resourcesConsumeDelay;
+    public float resourcesProduceDelay;
+    public int resourcesConsumeQuantity;
+    public int resourcesProduceQuantity;
+    [Space]
+    public ResourceSO[] resourcesToConsume;
+    public ResourceSO[] resourcesToProduce;
 }
 
 [Serializable]

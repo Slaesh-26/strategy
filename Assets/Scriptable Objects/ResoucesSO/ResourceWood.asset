@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d857cbac75f45d64b94477ae93b28f9c, type: 3}
   m_Name: ResourceWood
   m_EditorClassIdentifier: 
-  quantity: 907
+  producingMat: {fileID: 2100000, guid: 414ed72aebc69d34b85261ff0b26743c, type: 2}
+  consumingMat: {fileID: 2100000, guid: edb0df3210629064db1ad348f9e7cbc7, type: 2}
+  quantity: 813
   generation: 1
   prefabs:
   - {fileID: 4482695094734302382, guid: 7852b6b67be46f74eb3e0085f2494b42, type: 3}

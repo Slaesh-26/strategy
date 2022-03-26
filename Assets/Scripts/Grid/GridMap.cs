@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -17,49 +18,50 @@ public class GridMap : MonoBehaviour, IGridProvider
     [SerializeField] private bool drawLabels;
     [SerializeField] private bool drawGeneratedMap;
 
-    private Cell[,] cells;
+    private GridCell[,] cells;
 
     public void Init()
     {
-        cells = new Cell[mapSize.y, mapSize.x];
+        cells = new GridCell[mapSize.y, mapSize.x];
 
+        // spawning tiles
         for (int i = 0; i < mapSize.y; i++)
         {
             for (int j = 0; j < mapSize.x; j++)
             {
                 Vector2Int cellMapPos = new Vector2Int(i, j);
                 Vector3 cellWorldPos = GetCellWorldPos(cellMapPos);
-                Cell cell = new Cell(cellMapPos, cellWorldPos);
+                GridCell gridCell = new GridCell(cellMapPos, cellWorldPos);
 
                 if (tileGenerator.TryGetTerrainPrefab(cellMapPos, mapSize, out GameObject objToSpawn))
                 {
                     GameObject objSpawned = Instantiate(objToSpawn, transform);
-                    objSpawned.transform.position = cell.WorldPos;
-                    cell.SetPlacementActive(true);
+                    objSpawned.transform.position = gridCell.WorldPos;
+                    gridCell.SetPlacementActive(true);
                 }
                 else
                 {
-                    cell.SetPlacementActive(false);
+                    gridCell.SetPlacementActive(false);
                 }
                 
-                cells[i, j] = cell;
+                cells[i, j] = gridCell;
             }
         }
         
+        // spawning resources
         for (int i = 0; i < mapSize.y; i++)
         {
             for (int j = 0; j < mapSize.x; j++)
             {
-                Cell cell = cells[i, j];
-                if (!cell.IsCellPlaceable) continue;
+                GridCell gridCell = cells[i, j];
+                if (!gridCell.IsPlaceable) continue;
                 
-                GameObject resourcePrefab = resourcesGenerator.GetResourcePrefab(cell.MapPos, mapSize, out Color color);
+                Resource resource = resourcesGenerator.CreateResource(gridCell.MapPos, gridCell.WorldPos, mapSize);
 
-                //print(resourcePrefab);
-                if (resourcePrefab != null)
+                if (resource != null)
                 {
-                    GameObject resInstance = Instantiate(resourcePrefab, transform);
-                    resInstance.transform.position = cell.WorldPos;
+                    gridCell.SetPlacementActive(false);
+                    gridCell.AddObject(resource);
                 }
             }
         }
@@ -71,27 +73,39 @@ public class GridMap : MonoBehaviour, IGridProvider
         return GetCellWorldPos(mapPos);
     }
 
+    public bool CellContainsGridObject<T>(Vector2Int mapPos) where T : GridObject
+    {
+        GridCell gridCell = cells[mapPos.x, mapPos.y];
+        return gridCell.ContainsGridObject<T>();
+    }
+
     public CellData GetCellData(Vector3 worldPos)
     {
         Vector2Int mapPos = GetMapFromWorldPos(worldPos);
         return cells[mapPos.x, mapPos.y].GetCellData();
     }
 
+    public List<GridObject> GetCellGridObjects(Vector2Int mapPos)
+    {
+        GridCell gridCell = cells[mapPos.x, mapPos.y];
+        return gridCell.GetCellGridObjects();
+    }
+
     public bool IsCellNotPlaceable(Vector3 worldPos)
     {
         Vector2Int mapPos = GetMapFromWorldPos(worldPos);
-        Cell cell = cells[mapPos.x, mapPos.y];
+        GridCell gridCell = cells[mapPos.x, mapPos.y];
 
-        return cell.IsOccupied || !cell.IsGround;
+        return gridCell.IsOccupied || !gridCell.IsGround;
     }
 
-    public bool TryPlaceGridObject(Vector2Int mapPos, GridObject gridObject, Quaternion rotation)
+    public bool TryPlaceGridObject(Vector2Int mapPos, GridObject gridObject)
     {
-        Cell cell;
+        GridCell gridCell;
         
         try
         {
-            cell = cells[mapPos.x, mapPos.y];
+            gridCell = cells[mapPos.x, mapPos.y];
         }
         catch (IndexOutOfRangeException e)
         {
@@ -99,16 +113,16 @@ public class GridMap : MonoBehaviour, IGridProvider
             return false;
         }
 
-        if (cell.IsOccupied || !cell.IsGround)
+        if (gridCell.IsOccupied || !gridCell.IsGround)
         {
             print("Cell is occupied");
             return false;
         }
 
-        GridObject obj = Instantiate(gridObject, transform.position, rotation);
-        cell.SetObject(obj);
-        obj.SetParent(transform);
-        obj.SetPosition(cell.WorldPos);
+        //GridObject obj = Instantiate(gridObject, transform.position, rotation);
+        gridCell.AddObject(gridObject);
+        gridObject.SetParent(transform);
+        gridObject.SetPosition(gridCell.WorldPos);
 
         return true;
     }
@@ -135,27 +149,21 @@ public class GridMap : MonoBehaviour, IGridProvider
 
     private void OnDrawGizmos()
     {
-        /*Vector3 center = transform.position                              +
-                         transform.forward * mapSize.x * 0.5f * cellSize +
-                         transform.right   * mapSize.y * 0.5f * cellSize;
-
-        float radius = mapSize.x * 0.5f * cellSize;*/
-        
         for (int i = 0; i < mapSize.y; i++)
         {
             for (int j = 0; j < mapSize.x; j++)
             {
                 Vector2Int cellMapPos = new Vector2Int(i, j);
                 Vector3 cellWorldPos = GetCellWorldPos(cellMapPos);
-                //float distanceToCenter = Vector3.Distance(cellWorldPos, center) / radius;
                 
                 if (drawGeneratedMap)
                 {
-                    //float noise = Mathf.PerlinNoise(i * noiseCoefficient, j * noiseCoefficient);
-                    /*if (noise > noiseClip && distanceToCenter < distanceClip)
-                    {*/
-                    resourcesGenerator.GetResourcePrefab(cellMapPos, mapSize, out Color color);
-                    if (color != Color.black) Gizmos.color = color;
+                    Color color = resourcesGenerator.GetGizmosColor(cellMapPos, cellWorldPos, mapSize);
+
+                    if (color != Color.black)
+                    {
+                        Gizmos.color = color;
+                    }
                     else
                     {
                         Gizmos.color = tileGenerator.GetTerrainGizmosColor(cellMapPos, mapSize);

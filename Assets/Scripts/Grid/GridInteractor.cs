@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GridInteractor : MonoBehaviour
 {
-    public event Action<CellData> cellClicked;
+    public event Action<CellData/*, List<GridObject>*/> cellClicked;
     public event Action<CellData> selectedCellChanged;
     
     [SerializeField] private bool isOrthographic;
@@ -36,10 +37,11 @@ public class GridInteractor : MonoBehaviour
 
         Vector3 mouseGridWorldPos = mousePos + n * mouseRay;
         CellData currentSelectedCell = gridMap.GetCellData(mouseGridWorldPos);
-        bool cellPlaceable = !currentSelectedCell.isOccupied && currentSelectedCell.isGround;
+        //bool cellPlaceable = !currentSelectedCell.isOccupied && currentSelectedCell.isGround;
 
-        if (Input.GetMouseButtonDown(0) && cellPlaceable)
+        if (Input.GetMouseButtonDown(0)/* && cellPlaceable*/)
         {
+            //List<GridObject> objectsOnCurrentCell = gridMap.GetCellGridObjects(currentSelectedCell.mapPos);
             cellClicked?.Invoke(currentSelectedCell);
         }
 

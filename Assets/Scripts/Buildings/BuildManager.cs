@@ -7,20 +7,23 @@ public class BuildManager : MonoBehaviour
 {
 	[SerializeField] private ResourceSO[] resources;
 	[SerializeField] private BuildingSO[] buildings;
+	[SerializeField] private Building buildingPrefab;
 	[SerializeField] private Marker cellStatusMarker;
 	
 	private int buildingIndex = 0;
-	private GridObject buildingMarker;
+	private GameObject buildingMarker;
 	private IGridProvider gridProvider;
 
 	public void Init(IGridProvider gridProvider)
 	{
 		this.gridProvider = gridProvider;
-		buildingMarker = Instantiate(buildings[buildingIndex].Prefab);
+		buildingMarker = Instantiate(buildings[buildingIndex].modelPrefab);
 	}
 
 	public void OnGridCellClicked(CellData clickedCell)
 	{
+		if (!clickedCell.isPlaceable) return;
+		
 		Build(buildings[buildingIndex], clickedCell.mapPos, buildingMarker.transform.rotation);
 	}
 
@@ -28,22 +31,38 @@ public class BuildManager : MonoBehaviour
 	{
 		cellStatusMarker.SetState(clickedCell.isPlaceable);
 		cellStatusMarker.SetPosition(clickedCell.worldPos);
-		buildingMarker.SetPosition(clickedCell.worldPos);
+		
+		buildingMarker.transform.position = clickedCell.worldPos;
 	}
 
 	private void Build(BuildingSO buildingSO, Vector2Int mapPos, Quaternion rotation)
 	{
-		if (CanBuild(buildingSO))
+		if (IsEnoughResources(buildingSO))
 		{
 			SpendResources(buildingSO);
-			//build?.Invoke(buildingSO, worldPos, rotation);
-			gridProvider.TryPlaceGridObject(mapPos, buildingSO.Prefab, rotation);
+			Building building = InstantiateBuilding(buildingSO, rotation);
+			gridProvider.TryPlaceGridObject(mapPos, building);
 			print("Build");
 		}
 		else
 		{
 			print("Can't build, no enough resources");
 		}
+	}
+
+	private Building InstantiateBuilding(BuildingSO buildingSO, Quaternion rotation)
+	{
+		Building building = Instantiate(buildingPrefab, Vector3.zero, rotation);
+		building.Init(buildingSO);
+
+		return building;
+	}
+
+	private void UpdateBuildingMarker()
+	{
+		Vector3 position = buildingMarker.transform.position;
+		Destroy(buildingMarker);
+		buildingMarker = Instantiate(buildings[buildingIndex].modelPrefab, position, Quaternion.identity);
 	}
 
 	private void Update()
@@ -62,7 +81,7 @@ public class BuildManager : MonoBehaviour
 				Vector3 position = buildingMarker.transform.position;
 				Destroy(buildingMarker.gameObject);
 				buildingIndex = newIndex;
-				buildingMarker = Instantiate(buildings[buildingIndex].Prefab, position, Quaternion.identity);
+				buildingMarker = Instantiate(buildings[buildingIndex].modelPrefab, position, Quaternion.identity);
 			}
 		}
 	}
@@ -80,9 +99,9 @@ public class BuildManager : MonoBehaviour
 		return value;
 	}
 
-	private bool CanBuild(BuildingSO buildingSO)
+	private bool IsEnoughResources(BuildingSO buildingSO)
 	{
-		List<CraftComponent> craftComponents = buildingSO.Recipe;
+		List<CraftComponent> craftComponents = buildingSO.recipe;
 
 		foreach (CraftComponent component in craftComponents)
 		{
@@ -97,7 +116,7 @@ public class BuildManager : MonoBehaviour
 
 	private void SpendResources(BuildingSO buildingSO)
 	{
-		List<CraftComponent> craftComponents = buildingSO.Recipe;
+		List<CraftComponent> craftComponents = buildingSO.recipe;
 
 		foreach (CraftComponent component in craftComponents)
 		{

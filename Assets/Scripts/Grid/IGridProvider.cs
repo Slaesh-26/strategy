@@ -2,5 +2,6 @@
 
 public interface IGridProvider
 {
-	public bool TryPlaceGridObject(Vector2Int mapPos, GridObject objectToPlace, Quaternion rotation);
+	public bool TryPlaceGridObject(Vector2Int mapPos, GridObject objectToPlace);
+	public bool CellContainsGridObject<T>(Vector2Int mapPos) where T : GridObject;
 }

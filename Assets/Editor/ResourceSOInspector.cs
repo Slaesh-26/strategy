@@ -22,11 +22,15 @@ public class ResourceSOInspector : Editor
         SerializedProperty propNoiseCoef = so.FindProperty("noiseCoefficient");
         SerializedProperty propNoiseClip = so.FindProperty("noiseClip");
         SerializedProperty propProbability = so.FindProperty("probability");
+        SerializedProperty propProducingMat = so.FindProperty("producingMat");
+        SerializedProperty propConsumingMat = so.FindProperty("consumingMat");
         
         EditorGUILayout.LabelField("Universal Properties");
         EditorGUILayout.PropertyField(propQuantity);
         EditorGUILayout.PropertyField(propPrefabs);
         EditorGUILayout.PropertyField(propGeneration);
+        EditorGUILayout.PropertyField(propProducingMat);
+        EditorGUILayout.PropertyField(propConsumingMat);
         
         EditorGUILayout.Space();
 
