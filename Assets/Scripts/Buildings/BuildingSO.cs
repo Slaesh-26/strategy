@@ -6,19 +6,9 @@ using UnityEngine;
 [CreateAssetMenu]
 public class BuildingSO : ScriptableObject
 {
-    /*public List<CraftComponent> recipe => new List<CraftComponent>(recipe);
-    public GameObject modelPrefab => modelModelPrefab;
-    
-    public float resourcesConsumeDelay => resourcesConsumeDelay;
-    public float resourcesProduceDelay => resourcesProduceDelay;
-    public int resourcesConsumeQuantity => resourcesConsumeQuantity;
-    public int resourcesProduceQuantity => resourcesProduceQuantity;
-
-    public ResourceSO[] resourcesToConsume => resourcesToConsume;
-    public ResourceSO[] resourcesToProduce => resourcesToProduce;*/
-    
     public List<CraftComponent> recipe;
     public GameObject modelPrefab;
+    public GameObject markerPrefab;
     [Space]
     public float resourcesConsumeDelay;
     public float resourcesProduceDelay;
@@ -27,6 +17,8 @@ public class BuildingSO : ScriptableObject
     [Space]
     public ResourceSO[] resourcesToConsume;
     public ResourceSO[] resourcesToProduce;
+    [Space]
+    public Sprite uiImage;
 }
 
 [Serializable]

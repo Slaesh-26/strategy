@@ -5,16 +5,17 @@ using Random = UnityEngine.Random;
 [CreateAssetMenu]
 public class ResourceSO : ScriptableObject
 {
-    // todo: cleanup properties
     public event Action<int> changed;
-    public Generation GenerationType => generation;
-    public float Probability => probability;
-    public float NoiseCoefficient => noiseCoefficient;
-    public float NoiseClip => noiseClip;
-    public GameObject[] Prefabs => prefabs;
 
     public Material producingMat;
     public Material consumingMat;
+    public GameObject[] prefabs;
+
+    public int quantity;
+    public Generation generationType;
+    public float noiseCoefficient = 0.05f;
+    public float noiseClip = 0.1f;
+    public float probability = 0.05f;
 
     public enum Generation
     {
@@ -23,13 +24,6 @@ public class ResourceSO : ScriptableObject
         NOT_GENERATED
     }
     
-    [SerializeField] private int quantity;
-    [SerializeField] private Generation generation;
-    [SerializeField] private GameObject[] prefabs;
-    [SerializeField] private float noiseCoefficient = 0.05f;
-    [SerializeField] private float noiseClip = 0.1f;
-    [SerializeField] private float probability = 0.05f;
-
     public int GetQuantity()
     {
         return quantity;

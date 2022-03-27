@@ -19,36 +19,44 @@ public class GridCell
         IsOccupied = false;
     }
 
-    public bool ContainsGridObject<T>() where T : GridObject
+    public bool ContainsGridObject<T>(out T gridObject) where T : GridObject
     {
+        if (gridObjects == null)
+        {
+            gridObject = null;
+            return false;
+        }
+        
         GridObject obj = gridObjects.Find(o => o is T);
-        return obj != null;
+        bool objFound = obj != null;
+
+        if (objFound) gridObject = (T) obj;
+        else gridObject = null;
+        
+        return objFound;
     }
 
     public void AddObject(GridObject gridObject)
     {
-        if (gridObjects == null)
-        {
-            gridObjects = new List<GridObject>();
-        }
+        gridObjects ??= new List<GridObject>();
         
         gridObjects.Add(gridObject);
+        gridObject.destroyed += OnGridObjectDestroyed;
         IsOccupied = true;
     }
     
     public void RemoveObject(GridObject gridObject)
     {
         gridObjects.Remove(gridObject);
-        
         if (gridObjects.Count == 0)
         {
             IsOccupied = false;
         }
     }
 
-    public void SetPlacementActive(bool active)
+    public void SetGround(bool isGround)
     {
-        IsGround = active;
+        IsGround = isGround;
     }
 
     public CellData GetCellData()
@@ -66,6 +74,12 @@ public class GridCell
     public List<GridObject> GetCellGridObjects()
     {
         return new List<GridObject>(gridObjects);
+    }
+
+    private void OnGridObjectDestroyed(GridObject gridObject)
+    {
+        gridObject.destroyed -= OnGridObjectDestroyed;
+        RemoveObject(gridObject);
     }
 }
 

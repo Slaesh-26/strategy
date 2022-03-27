@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Building : GridObject
@@ -7,6 +8,7 @@ public class Building : GridObject
 
 	private ParticleSystemRenderer particlesRenderer;
 	private BuildingSO buildingData;
+	private bool enoughResources = true;
 	
 	public void Init(BuildingSO buildingSO)
 	{
@@ -14,63 +16,67 @@ public class Building : GridObject
 		InitVisuals(buildingSO.modelPrefab);
 
 		particlesRenderer = particles.GetComponent<ParticleSystemRenderer>();
-
+		
 		StartCoroutine(ConsumeResourcesCoroutine());
 		StartCoroutine(ProduceResourcesCoroutine());
 	}
 
 	private IEnumerator ConsumeResourcesCoroutine()
 	{
-		while (true)
+		if (buildingData.resourcesToConsume == null || buildingData.resourcesToConsume.Length == 0)
 		{
-			yield return new WaitForSeconds(buildingData.resourcesConsumeDelay);
-            ConsumeResources();
+			yield break;
+		}
+		
+		yield return new WaitForSeconds(buildingData.resourcesConsumeDelay);
+
+		while (enoughResources)
+		{
+			foreach (ResourceSO resource in buildingData.resourcesToConsume)
+			{
+				if (resource.RemoveQuantity(buildingData.resourcesConsumeQuantity))
+				{
+					print($"Consumed {buildingData.resourcesConsumeQuantity} of {resource.name}");
+				
+					PlayParticleEffect(resource.consumingMat);
+					yield return new WaitForSeconds(buildingData.resourcesConsumeDelay);
+				}
+				else
+				{
+					print($"No enough {resource.name} to continue");
+					enoughResources = false;
+				}
+			}
 		}
 	}
 
 	private IEnumerator ProduceResourcesCoroutine()
 	{
-		while (true)
+		if (buildingData.resourcesToProduce == null || buildingData.resourcesToProduce.Length == 0)
 		{
-			yield return new WaitForSeconds(buildingData.resourcesProduceDelay);
-            ProduceResources();
+			yield break;
 		}
-	}
-
-	private void ProduceResources()
-	{
-		foreach (ResourceSO resource in buildingData.resourcesToProduce)
+		
+		yield return new WaitForSeconds(buildingData.resourcesProduceDelay);
+		
+		while (enoughResources)
 		{
-			resource.AddQuantity(buildingData.resourcesProduceQuantity);
-			print($"Produced {buildingData.resourcesProduceQuantity} of {resource.name}");
+			foreach (ResourceSO resource in buildingData.resourcesToProduce)
+			{
+				resource.AddQuantity(buildingData.resourcesProduceQuantity);
+				print($"Produced {buildingData.resourcesProduceQuantity} of {resource.name}");
 			
-			//PlayParticleEffect(resource.producingMat);
-		}
-	}
-	
-	private void ConsumeResources()
-	{
-		foreach (ResourceSO resource in buildingData.resourcesToConsume)
-		{
-			if (resource.RemoveQuantity(buildingData.resourcesConsumeQuantity))
-			{
-				print($"Consumed {buildingData.resourcesConsumeQuantity} of {resource.name}");
-				
-				//PlayParticleEffect(resource.consumingMat);
-			}
-			else
-			{
-				print($"No enough {resource.name} to continue");
-				StopAllCoroutines();
+				PlayParticleEffect(resource.producingMat);
+				yield return new WaitForSeconds(buildingData.resourcesProduceDelay);
 			}
 		}
 	}
 
 	private void PlayParticleEffect(Material mat)
 	{
-		if (particles.isPlaying) particles.Stop();
+		if (particles.particleCount > 0) particles.Clear();
 		
 		particlesRenderer.material = mat;
-		particles.Play();
+		particles.Emit(1);
 	}
 }

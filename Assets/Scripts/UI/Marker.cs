@@ -16,4 +16,14 @@ public class Marker : MonoBehaviour
 	{
 		transform.position = position + Vector3.up * verticalOffset;
 	}
+
+	public void Disable()
+	{
+		meshRenderer.enabled = false;
+	}
+	
+	public void Enable()
+	{
+		meshRenderer.enabled = true;
+	}
 }

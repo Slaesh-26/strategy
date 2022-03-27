@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GridInteractor : MonoBehaviour
 {
-    public event Action<CellData/*, List<GridObject>*/> cellClicked;
+    public event Action<CellData> cellClicked;
     public event Action<CellData> selectedCellChanged;
     
     [SerializeField] private bool isOrthographic;
@@ -37,11 +37,9 @@ public class GridInteractor : MonoBehaviour
 
         Vector3 mouseGridWorldPos = mousePos + n * mouseRay;
         CellData currentSelectedCell = gridMap.GetCellData(mouseGridWorldPos);
-        //bool cellPlaceable = !currentSelectedCell.isOccupied && currentSelectedCell.isGround;
 
-        if (Input.GetMouseButtonDown(0)/* && cellPlaceable*/)
+        if (Input.GetMouseButtonDown(0))
         {
-            //List<GridObject> objectsOnCurrentCell = gridMap.GetCellGridObjects(currentSelectedCell.mapPos);
             cellClicked?.Invoke(currentSelectedCell);
         }
 
@@ -49,6 +47,8 @@ public class GridInteractor : MonoBehaviour
         {
             lastSelectedCell = currentSelectedCell;
             selectedCellChanged?.Invoke(currentSelectedCell);
+            
+            print($"is ground {currentSelectedCell.isGround} is occupied {currentSelectedCell.isOccupied}");
         }
     }
 }

@@ -5,26 +5,43 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
+	public event Action<BuildingSO, Vector2Int> buildWithData;
+	public event Action build;
+	
 	[SerializeField] private ResourceSO[] resources;
 	[SerializeField] private BuildingSO[] buildings;
 	[SerializeField] private Building buildingPrefab;
 	[SerializeField] private Marker cellStatusMarker;
+	[SerializeField] private BuildingPanel buildingPanel;
 	
 	private int buildingIndex = 0;
 	private GameObject buildingMarker;
 	private IGridProvider gridProvider;
+	private BuildingSO current;
+
+	private bool buildingModeActive = false;
 
 	public void Init(IGridProvider gridProvider)
 	{
 		this.gridProvider = gridProvider;
-		buildingMarker = Instantiate(buildings[buildingIndex].modelPrefab);
+		buildingMarker = Instantiate(buildings[buildingIndex].markerPrefab);
+		
+		buildingPanel.Init();
+		buildingPanel.selectedBuildingChanged += OnSelectedBuildingChanged;
+		current = buildings[0];
+		
+		buildingMarker.SetActive(false);
 	}
 
 	public void OnGridCellClicked(CellData clickedCell)
 	{
 		if (!clickedCell.isPlaceable) return;
+		if (!buildingModeActive) return;
 		
-		Build(buildings[buildingIndex], clickedCell.mapPos, buildingMarker.transform.rotation);
+		Build(current, clickedCell.mapPos, buildingMarker.transform.rotation);
+		buildingModeActive = false;
+		buildingMarker.SetActive(false);
+		cellStatusMarker.Disable();
 	}
 
 	public void OnSelectedCellChanged(CellData clickedCell)
@@ -35,6 +52,26 @@ public class BuildManager : MonoBehaviour
 		buildingMarker.transform.position = clickedCell.worldPos;
 	}
 
+	private void OnDisable()
+	{
+		buildingPanel.selectedBuildingChanged -= OnSelectedBuildingChanged;
+	}
+
+	private void OnSelectedBuildingChanged(BuildingSO building)
+	{
+		current = Array.Find(buildings, b => b.Equals(building));
+		UpdateBuildingMarker();
+		if (current == null)
+		{
+			Debug.LogError("Building not found");
+			current = buildings[0];
+		}
+
+		buildingModeActive = true;
+		buildingMarker.SetActive(true);
+		cellStatusMarker.Enable();
+	}
+
 	private void Build(BuildingSO buildingSO, Vector2Int mapPos, Quaternion rotation)
 	{
 		if (IsEnoughResources(buildingSO))
@@ -42,7 +79,9 @@ public class BuildManager : MonoBehaviour
 			SpendResources(buildingSO);
 			Building building = InstantiateBuilding(buildingSO, rotation);
 			gridProvider.TryPlaceGridObject(mapPos, building);
-			print("Build");
+			
+			buildWithData?.Invoke(buildingSO, mapPos);
+			build?.Invoke();
 		}
 		else
 		{
@@ -62,7 +101,7 @@ public class BuildManager : MonoBehaviour
 	{
 		Vector3 position = buildingMarker.transform.position;
 		Destroy(buildingMarker);
-		buildingMarker = Instantiate(buildings[buildingIndex].modelPrefab, position, Quaternion.identity);
+		buildingMarker = Instantiate(current.markerPrefab, position, Quaternion.identity);
 	}
 
 	private void Update()
@@ -72,7 +111,7 @@ public class BuildManager : MonoBehaviour
 			RotateMarker();
 		}
 
-		if (Input.GetKeyDown(KeyCode.Q))
+		/*if (Input.GetKeyDown(KeyCode.Q))
 		{
 			int newIndex = buildingIndex + 1;
 			newIndex = ClampInversed(newIndex, 0, buildings.Length - 1);
@@ -83,7 +122,7 @@ public class BuildManager : MonoBehaviour
 				buildingIndex = newIndex;
 				buildingMarker = Instantiate(buildings[buildingIndex].modelPrefab, position, Quaternion.identity);
 			}
-		}
+		}*/
 	}
 	
 	private void RotateMarker()

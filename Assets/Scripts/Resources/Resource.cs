@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class Resource : GridObject
 {
-	public event Action<ResourceSO, int> collectionFinished;
-	
-	[SerializeField] private GameObject collectionMarker;
+	public bool IsBeingCollected { get; private set; }
+
+	[SerializeField] private ParticleSystem collectionMarker;
 
 	private ResourceSO resourceData;
 	private float timeToCollect = 5f;
@@ -19,6 +19,9 @@ public class Resource : GridObject
 
 		GameObject randomPrefab = resourceSO.GetRandomPrefab();
 		InitVisuals(randomPrefab);
+		
+		collectionMarker.Stop();
+		collectionMarker.Clear();
 	}
 	
 	public void BeginCollect()
@@ -28,19 +31,23 @@ public class Resource : GridObject
 
 	public void CancelCollection()
 	{
+		collectionMarker.Stop();
+		collectionMarker.Clear();
+		IsBeingCollected = false;
 		StopAllCoroutines();
 	}
 
 	private IEnumerator CollectCoroutine()
 	{
-		collectionMarker.SetActive(true);
+		IsBeingCollected = true;
+		
+		collectionMarker.Play();
 		yield return new WaitForSeconds(timeToCollect);
-		collectionFinished?.Invoke(resourceData, quantity);
-		collectionMarker.SetActive(false);
-	}
-
-	private void OnDrawGizmos()
-	{
-		Handles.Label(transform.position, resourceData.name + quantity.ToString());
+		collectionMarker.Stop();
+		
+		resourceData.AddQuantity(quantity);
+		IsBeingCollected = false;
+		
+		DestroyGridObject();
 	}
 }

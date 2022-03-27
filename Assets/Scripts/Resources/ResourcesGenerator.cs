@@ -9,19 +9,19 @@ public class ResourcesGenerator : MonoBehaviour
 	{
 		foreach (ResourceSO resourceData in resources)
 		{
-			if (resourceData.GenerationType == ResourceSO.Generation.NOISE)
+			if (resourceData.generationType == ResourceSO.Generation.NOISE)
 			{
-				float noise = Mathf.PerlinNoise(mapPos.x * resourceData.NoiseCoefficient,
-				                                mapPos.y * resourceData.NoiseCoefficient);
-				if (noise > resourceData.NoiseClip)
+				float noise = Mathf.PerlinNoise(mapPos.x * resourceData.noiseCoefficient,
+				                                mapPos.y * resourceData.noiseCoefficient);
+				if (noise > resourceData.noiseClip)
 				{
 					Resource res = InstantiateResource(resourceData, worldPos);
 					return res;
 				}
 			}
-			if (resourceData.GenerationType == ResourceSO.Generation.RANDOM)
+			if (resourceData.generationType == ResourceSO.Generation.RANDOM)
 			{
-				bool success = RollTheDice(resourceData.Probability);
+				bool success = RollTheDice(resourceData.probability);
 
 				if (success)
 				{
@@ -38,18 +38,18 @@ public class ResourcesGenerator : MonoBehaviour
 	{
 		foreach (ResourceSO resource in resources)
 		{
-			if (resource.GenerationType == ResourceSO.Generation.NOISE)
+			if (resource.generationType == ResourceSO.Generation.NOISE)
 			{
-				float noise = Mathf.PerlinNoise(mapPos.x * resource.NoiseCoefficient,
-				                                mapPos.y * resource.NoiseCoefficient);
-				if (noise > resource.NoiseClip)
+				float noise = Mathf.PerlinNoise(mapPos.x * resource.noiseCoefficient,
+				                                mapPos.y * resource.noiseCoefficient);
+				if (noise > resource.noiseClip)
 				{
 					return Color.red;
 				}
 			}
-			if (resource.GenerationType == ResourceSO.Generation.RANDOM)
+			if (resource.generationType == ResourceSO.Generation.RANDOM)
 			{
-				bool success = RollTheDice(resource.Probability);
+				bool success = RollTheDice(resource.probability);
 				return success ? Color.red : Color.black;
 			}
 		}
@@ -60,6 +60,7 @@ public class ResourcesGenerator : MonoBehaviour
 	private Resource InstantiateResource(ResourceSO resourceData, Vector3 worldPos)
 	{
 		Resource res = Instantiate(resourcePrefab, worldPos, MathUtils.GetRandomFullCircleRotation());
+		res.SetParent(transform);
 		res.Init(resourceData);
 		return res;
 	}

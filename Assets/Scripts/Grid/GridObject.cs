@@ -3,7 +3,9 @@ using UnityEngine;
 
 public abstract class GridObject : MonoBehaviour
 {
-    protected GameObject model;
+    public event Action<GridObject> destroyed;
+    
+    private GameObject model;
 
     protected void InitVisuals(GameObject modelPrefab)
     {
@@ -18,6 +20,12 @@ public abstract class GridObject : MonoBehaviour
     public void SetParent(Transform t)
     {
         transform.SetParent(t);
+    }
+
+    protected void DestroyGridObject()
+    {
+        destroyed?.Invoke(this);
+        Destroy(gameObject);
     }
 
     /*public void SetDefaultVisuals()

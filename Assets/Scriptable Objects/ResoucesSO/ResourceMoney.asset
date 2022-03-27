@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d857cbac75f45d64b94477ae93b28f9c, type: 3}
   m_Name: ResourceMoney
   m_EditorClassIdentifier: 
-  producingMat: {fileID: 2100000, guid: 414ed72aebc69d34b85261ff0b26743c, type: 2}
-  consumingMat: {fileID: 2100000, guid: edb0df3210629064db1ad348f9e7cbc7, type: 2}
-  quantity: 580
-  generation: 0
+  producingMat: {fileID: 2100000, guid: 7a114c4972b19964486b9d373c5b6277, type: 2}
+  consumingMat: {fileID: 2100000, guid: c062f8e5d67568d48b113502f64f7bf8, type: 2}
   prefabs: []
+  quantity: 100
+  generationType: 2
   noiseCoefficient: 0.05
   noiseClip: 0.1
   probability: 0.05

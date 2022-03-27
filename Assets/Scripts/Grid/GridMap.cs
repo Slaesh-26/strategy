@@ -37,11 +37,11 @@ public class GridMap : MonoBehaviour, IGridProvider
                 {
                     GameObject objSpawned = Instantiate(objToSpawn, transform);
                     objSpawned.transform.position = gridCell.WorldPos;
-                    gridCell.SetPlacementActive(true);
+                    gridCell.SetGround(true);
                 }
                 else
                 {
-                    gridCell.SetPlacementActive(false);
+                    gridCell.SetGround(false);
                 }
                 
                 cells[i, j] = gridCell;
@@ -60,7 +60,6 @@ public class GridMap : MonoBehaviour, IGridProvider
 
                 if (resource != null)
                 {
-                    gridCell.SetPlacementActive(false);
                     gridCell.AddObject(resource);
                 }
             }
@@ -73,10 +72,25 @@ public class GridMap : MonoBehaviour, IGridProvider
         return GetCellWorldPos(mapPos);
     }
 
-    public bool CellContainsGridObject<T>(Vector2Int mapPos) where T : GridObject
+    public bool CellContainsGridObject<T>(Vector2Int mapPos, out T gridObject) where T : GridObject
     {
-        GridCell gridCell = cells[mapPos.x, mapPos.y];
-        return gridCell.ContainsGridObject<T>();
+        GridCell gridCell;
+        
+        // todo: make "TryGetCell" method
+        try
+        {
+            gridCell = cells[mapPos.x, mapPos.y];
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            Debug.LogError($"Cell with index {mapPos} does not exist");
+            gridObject = null;
+            
+            return false;
+        }
+
+        bool contains = gridCell.ContainsGridObject<T>(out gridObject);
+        return contains;
     }
 
     public CellData GetCellData(Vector3 worldPos)
@@ -115,11 +129,10 @@ public class GridMap : MonoBehaviour, IGridProvider
 
         if (gridCell.IsOccupied || !gridCell.IsGround)
         {
-            print("Cell is occupied");
+            Debug.LogError($"Cell {mapPos} is occupied");
             return false;
         }
 
-        //GridObject obj = Instantiate(gridObject, transform.position, rotation);
         gridCell.AddObject(gridObject);
         gridObject.SetParent(transform);
         gridObject.SetPosition(gridCell.WorldPos);
