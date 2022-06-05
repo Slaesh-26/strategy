@@ -7,48 +7,49 @@ public class GridInteractor : MonoBehaviour
     public event Action<CellData> cellClicked;
     public event Action<CellData> selectedCellChanged;
     
-    [SerializeField] private bool isOrthographic;
-    [SerializeField] private GridMap gridMap;
+    private bool _isOrthographic;
+    private IGridProvider _gridProvider;
+    private Camera _camera;
+    private CellData _lastSelectedCell;
+    private float _gridMapWorldHeight;
     
-    private new Camera camera;
-    private CellData lastSelectedCell;
-
-    private void Start()
+    public void Init(float gridMapWorldHeight, IGridProvider gridProvider)
     {
-        camera = Camera.main;
+        _camera = Camera.main;
+        _isOrthographic = _camera.orthographic;
+        _gridProvider = gridProvider;
+        _gridMapWorldHeight = gridMapWorldHeight;
     }
 
     private void Update()
     {
         Vector2 screenPos = Input.mousePosition;
-        Vector3 mousePos = camera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1f));
+        Vector3 mousePos = _camera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1f));
         Vector3 mouseRay;
         
-        if (isOrthographic)
+        if (_isOrthographic)
         {
-            mouseRay = camera.transform.forward;
+            mouseRay = _camera.transform.forward;
         }
         else
         {
-            mouseRay = mousePos - camera.transform.position;
+            mouseRay = mousePos - _camera.transform.position;
         }
         
-        float n = (-mousePos.y + gridMap.Height) / mouseRay.y;
+        float n = (-mousePos.y + _gridMapWorldHeight) / mouseRay.y;
 
         Vector3 mouseGridWorldPos = mousePos + n * mouseRay;
-        CellData currentSelectedCell = gridMap.GetCellData(mouseGridWorldPos);
+        CellData currentSelectedCell = _gridProvider.GetCellData(mouseGridWorldPos);
 
         if (Input.GetMouseButtonDown(0))
         {
             cellClicked?.Invoke(currentSelectedCell);
         }
 
-        if (!lastSelectedCell.Equals(currentSelectedCell))
+        if (!_lastSelectedCell.Equals(currentSelectedCell))
         {
-            lastSelectedCell = currentSelectedCell;
+            _lastSelectedCell = currentSelectedCell;
             selectedCellChanged?.Invoke(currentSelectedCell);
-            
-            print($"is ground {currentSelectedCell.isGround} is occupied {currentSelectedCell.isOccupied}");
         }
     }
 }

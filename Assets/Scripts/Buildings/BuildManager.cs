@@ -16,8 +16,8 @@ public class BuildManager : MonoBehaviour
 	
 	private int buildingIndex = 0;
 	private GameObject buildingMarker;
-	private IGridProvider gridProvider;
 	private BuildingSO current;
+	private IGridProvider gridProvider;
 
 	private bool buildingModeActive = false;
 

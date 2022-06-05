@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrainPrefab: {fileID: 7639612838162136013, guid: f6baf61fe7ddb8c4a8ee45b18f6679cd, type: 3}
   gizmosColor: {r: 0.41167617, g: 0.8018868, b: 0.20728011, a: 1}
-  range: {x: 0.29, y: 1}
+  range:
+    min: 0.27
+    max: 0.47
   howNearToShore: 0

@@ -18,6 +18,7 @@ public class AppEntryPoint : MonoBehaviour
 		gridMap.Init();
 		buildManager.Init(gridMap);
 		resourceCollector.Init(gridMap);
+		interactor.Init(gridMap.Height, gridMap);
 		
 		interactor.cellClicked += buildManager.OnGridCellClicked;
 		interactor.cellClicked += resourceCollector.OnGridCellClick;

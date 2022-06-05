@@ -49,7 +49,7 @@ public class GridMap : MonoBehaviour, IGridProvider
         }
         
         // spawning resources
-        for (int i = 0; i < mapSize.y; i++)
+        /*for (int i = 0; i < mapSize.y; i++)
         {
             for (int j = 0; j < mapSize.x; j++)
             {
@@ -63,7 +63,9 @@ public class GridMap : MonoBehaviour, IGridProvider
                     gridCell.AddObject(resource);
                 }
             }
-        }
+        }*/
+        
+        
     }
 
     public Vector3 GetSnappedPosition(Vector3 worldPos)
